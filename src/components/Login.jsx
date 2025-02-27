@@ -13,9 +13,24 @@ const Login = () => {
   const [messageType, setMessageType] = useState("");
   const [showMessage, setShowMessage] = useState(false);
 
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const handleEmailChange = (e) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+    setIsValidEmail(validateEmail(newEmail));
+  };
+
+  const handlePasswordChange = (e) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+    setIsValidPassword(newPassword.length >= 8);
+  };
+
+  const handleRoleChange = (e) => {
+    const newRole = e.target.value;
+    setRole(newRole);
+    setIsValidRole(newRole !== "none");
   };
 
   const handleLogin = () => {
@@ -27,29 +42,32 @@ const Login = () => {
     setIsValidPassword(validPassword);
     setIsValidRole(validRole);
 
-    if (!validEmail || !validPassword || !validRole) {
-      setMessage("Wrong Credentials");
-      setMessageType("error");
-    } else {
+    if (validEmail && validPassword && validRole) {
       setMessage("Login Successful");
       setMessageType("success");
+    } else {
+      setMessage("Error: Wrong Credentials");
+      setMessageType("error");
     }
     setShowMessage(true);
     setTimeout(() => setShowMessage(false), 3000);
   };
 
   return (
-    <div className="flex h-screen">
-      <div className="w-1/2 h-full bg-cover bg-center" style={{ backgroundImage: `url(${bgImage})` }}></div>
-      <div className="w-1/2 flex flex-col justify-center items-center bg-gray-100">
-        <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+    <div className="flex flex-col md:flex-row h-screen">
+      {/* Left side - Background Image */}
+      <div className="hidden md:block md:w-1/2 bg-cover bg-center" style={{ backgroundImage: `url(${bgImage})` }}></div>
+
+      {/* Right side - Login Form */}
+      <div className="w-full md:w-1/2 flex flex-col justify-center items-center bg-gray-100 p-6 md:p-12">
+        <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
           <h2 className="text-2xl font-semibold mb-4 text-center">Login</h2>
           <div className="mb-4">
             <label className="block text-gray-600 text-sm mb-1">Email</label>
             <input
               type="text"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleEmailChange}
               className={`w-full p-2 border rounded focus:outline-none ${isValidEmail ? "border-gray-300" : "border-red-500"}`}
               placeholder="Enter your email"
             />
@@ -60,7 +78,7 @@ const Login = () => {
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={handlePasswordChange}
               className={`w-full p-2 border rounded focus:outline-none ${isValidPassword ? "border-gray-300" : "border-red-500"}`}
               placeholder="Enter your password"
             />
@@ -70,7 +88,7 @@ const Login = () => {
             <label className="block text-gray-600 text-sm mb-1">Role</label>
             <select
               value={role}
-              onChange={(e) => setRole(e.target.value)}
+              onChange={handleRoleChange}
               className={`w-full p-2 border rounded focus:outline-none ${isValidRole ? "border-gray-300" : "border-red-500"}`}
             >
               <option value="none">Select Role</option>
@@ -87,6 +105,8 @@ const Login = () => {
           </p>
         </div>
       </div>
+
+      {/* Pop-up Message */}
       {showMessage && (
         <div className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 text-white rounded shadow-lg ${messageType === "success" ? "bg-green-500" : "bg-red-500"}`}>
           {message}

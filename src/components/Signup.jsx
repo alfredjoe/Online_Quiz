@@ -3,116 +3,113 @@ import { Link } from "react-router-dom";
 import bgImage from "../images/bg.jpg";
 
 const Signup = () => {
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("none");
-  const [errors, setErrors] = useState({});
-  const [showMessage, setShowMessage] = useState("");
+  const [isValidEmail, setIsValidEmail] = useState(true);
+  const [isValidPassword, setIsValidPassword] = useState(true);
+  const [isValidRole, setIsValidRole] = useState(true);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
+  const [showMessage, setShowMessage] = useState(false);
 
-  const validateForm = () => {
-    let newErrors = {};
-    if (!name.trim()) newErrors.name = "Name is required";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = "Enter a valid email address";
-    if (password.length < 8) newErrors.password = "Password must be at least 8 characters";
-    if (role === "none") newErrors.role = "Please select a role";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleEmailChange = (e) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+    setIsValidEmail(validateEmail(newEmail));
+  };
+
+  const handlePasswordChange = (e) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+    setIsValidPassword(newPassword.length >= 8);
+  };
+
+  const handleRoleChange = (e) => {
+    const newRole = e.target.value;
+    setRole(newRole);
+    setIsValidRole(newRole !== "none");
   };
 
   const handleSignup = () => {
-    if (validateForm()) {
-      setShowMessage("Signup Successful!");
-      setTimeout(() => setShowMessage(""), 3000);
+    const validEmail = validateEmail(email);
+    const validPassword = password.length >= 8;
+    const validRole = role !== "none";
+
+    setIsValidEmail(validEmail);
+    setIsValidPassword(validPassword);
+    setIsValidRole(validRole);
+
+    if (validEmail && validPassword && validRole) {
+      setMessage("Signup Successful");
+      setMessageType("success");
     } else {
-      setShowMessage("Please fix the errors!");
-      setTimeout(() => setShowMessage(""), 3000);
+      setMessage("Wrong Credentials");
+      setMessageType("error");
     }
+    setShowMessage(true);
+    setTimeout(() => setShowMessage(false), 3000);
   };
 
   return (
-    <div className="h-screen flex">
-      {/* Left side (Image Background) */}
-      <div className="w-1/2 h-full bg-cover bg-center" style={{ backgroundImage: `url(${bgImage})` }}></div>
-
-      {/* Right side (Signup Form) */}
-      <div className="w-1/2 flex items-center justify-center bg-gray-100">
-        <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+    <div className="flex flex-col md:flex-row h-screen">
+     <div className="hidden md:block md:w-1/2 bg-cover bg-center" style={{ backgroundImage: `url(${bgImage})` }}></div>
+      <div className="w-full md:w-1/2 flex flex-col justify-center items-center bg-gray-100 p-6 md:p-12">
+        <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
           <h2 className="text-2xl font-semibold mb-4 text-center">Sign Up</h2>
-
-          {/* Name Input */}
-          <div className="mb-4">
-            <label className="block text-gray-600 text-sm mb-1">Name</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className={`w-full p-2 border rounded ${errors.name ? "border-red-500" : "border-gray-300"}`}
-              placeholder="Enter your name"
-            />
-            {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
-          </div>
-
-          {/* Email Input */}
           <div className="mb-4">
             <label className="block text-gray-600 text-sm mb-1">Email</label>
             <input
               type="text"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className={`w-full p-2 border rounded ${errors.email ? "border-red-500" : "border-gray-300"}`}
+              onChange={handleEmailChange}
+              className={`w-full p-2 border rounded focus:outline-none ${isValidEmail ? "border-gray-300" : "border-red-500"}`}
               placeholder="Enter your email"
             />
-            {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+            {!isValidEmail && <p className="text-red-500 text-sm mt-1">Enter a valid email address</p>}
           </div>
-
-          {/* Password Input */}
           <div className="mb-4">
             <label className="block text-gray-600 text-sm mb-1">Password</label>
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={`w-full p-2 border rounded ${errors.password ? "border-red-500" : "border-gray-300"}`}
+              onChange={handlePasswordChange}
+              className={`w-full p-2 border rounded focus:outline-none ${isValidPassword ? "border-gray-300" : "border-red-500"}`}
               placeholder="Enter your password"
             />
-            {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+            {!isValidPassword && <p className="text-red-500 text-sm mt-1">Password must be at least 8 characters</p>}
           </div>
-
-          {/* Role Selection */}
           <div className="mb-4">
             <label className="block text-gray-600 text-sm mb-1">Role</label>
             <select
               value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className={`w-full p-2 border rounded ${errors.role ? "border-red-500" : "border-gray-300"}`}
+              onChange={handleRoleChange}
+              className={`w-full p-2 border rounded focus:outline-none ${isValidRole ? "border-gray-300" : "border-red-500"}`}
             >
               <option value="none">Select Role</option>
               <option value="student">Student</option>
               <option value="teacher">Teacher</option>
             </select>
-            {errors.role && <p className="text-red-500 text-sm">{errors.role}</p>}
+            {!isValidRole && <p className="text-red-500 text-sm mt-1">Please select a valid role</p>}
           </div>
-
-          {/* Signup Button */}
           <button onClick={handleSignup} className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
             Sign Up
           </button>
-
-          {/* Already have an account */}
           <p className="text-sm text-gray-600 mt-4 text-center">
             Already have an account? <Link to="/login" className="text-blue-500 hover:underline">Login</Link>
           </p>
-
-          {/* Popup Notification */}
-          {showMessage && (
-            <div className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded shadow-md 
-                ${showMessage === "Signup Successful!" ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}>
-              {showMessage}
-            </div>
-          )}
         </div>
       </div>
+      {showMessage && (
+        <div className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 text-white rounded shadow-lg ${messageType === "success" ? "bg-green-500" : "bg-red-500"}`}>
+          {message}
+        </div>
+      )}
     </div>
   );
 };
