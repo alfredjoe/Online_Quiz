@@ -1,7 +1,7 @@
 import first from "../images/first.jpg";
 import second from "../images/second.png";
 import third from "../images/third.gif";
-import fourth from "../images/fouth.png";
+import fourth from "../images/fourth.png";
 const Home = () => {
   return (
     <div className="w-full h-screen overflow-auto">
@@ -148,7 +148,7 @@ const Home = () => {
         </button>
 
         {/* Footer */}
-        <footer className="w-full mt-16 bg-gray-100 py-12 px-6 md:px-24 flex flex-col md:flex-row justify-between items-center">
+        <footer className="w-full mt-16 bg-black py-12 px-6 md:px-24 flex flex-col md:flex-row justify-between items-center">
           {/* Left Section */}
           <div className="text-left space-y-4">
             {/* Logo Placeholder */}
