@@ -117,6 +117,12 @@ const Modal = ({ showModal, setShowModal }) => {
                   Send Message
                 </button>
               </div>
+
+              {showPopup && popupColor === "red" && (
+                <div className="absolute bottom-[-6rem] left-1/2 transform -translate-x-1/2 px-4 py-2 mb-4 rounded-lg shadow-lg text-white bg-red-500">
+                  {popupMessage}
+                </div>
+              )}
             </form>
 
             {/* Close Button */}
@@ -126,12 +132,6 @@ const Modal = ({ showModal, setShowModal }) => {
             >
               &times;
             </button>
-
-            {showPopup && popupColor === "red" && (
-              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 px-4 py-2 mb-4 rounded-lg shadow-lg text-white bg-red-500">
-                {popupMessage}
-              </div>
-            )}
           </div>
         </div>
       ) : null}
