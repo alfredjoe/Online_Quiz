@@ -1,4 +1,4 @@
-import first from "../images/first.jpg";
+import first from "../images/first.gif";
 import second from "../images/second.gif";
 import third from "../images/third.gif";
 import fourth from "../images/fourth.png";
@@ -15,7 +15,7 @@ const Home = () => {
             your colleagues, <br />
             pupils, or friends
           </div>
-          <div className="text-2xl mt-4">
+          <div className="text-xl mt-4">
             The easy test maker that engages your colleagues, pupils, or friends
           </div>
           <button className="bg-[#00BFFF] text-white px-6 py-3 mt-1 rounded-full shadow-lg hover:bg-[#009ACD] transition">
@@ -24,13 +24,14 @@ const Home = () => {
         </div>
 
         {/* Right Image */}
-        <div className="w-1/2">
-          <img
-            src={first}
-            alt="Hero section illustration"
-            className="w-[80%] h-auto  "
-          />
-        </div>
+        <div className="w-1/2 flex items-center justify-center">
+  <img
+    src={first}
+    alt="Hero section illustration"
+    className="w-full h-auto max-h-full object-contain"
+  />
+</div>
+
       </section>
 
       {/* Section 2: About */}
@@ -55,13 +56,14 @@ const Home = () => {
         </div>
 
         {/* Right Image - Full height with cut */}
-        <div className="w-1/2 h-screen">
-          <img
-            src={second}
-            alt="Teacher Login Illustration"
-            className="w-full h-full object-cover"
-          />
-        </div>
+        <div className="w-1/2 h-screen flex items-center justify-center">
+  <img
+    src={second}
+    alt="Teacher Login Illustration"
+    className="w-full h-auto max-h-full object-contain"
+  />
+</div>
+
       </section>
 
       {/* Section 3: Features */}
