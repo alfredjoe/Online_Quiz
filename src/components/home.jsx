@@ -1,5 +1,5 @@
 import first from "../images/first.jpg";
-import second from "../images/second.png";
+import second from "../images/second.gif";
 import third from "../images/third.gif";
 import fourth from "../images/fourth.png";
 const Home = () => {
@@ -28,7 +28,7 @@ const Home = () => {
           <img
             src={first}
             alt="Hero section illustration"
-            className="w-[99%] h-auto  "
+            className="w-[80%] h-auto  "
           />
         </div>
       </section>
@@ -89,103 +89,104 @@ const Home = () => {
       </section>
 
       {/* Section 4: Testimonials */}
-      <section className="h-screen flex flex-col justify-center items-center bg-white text-black px-12 py-16 text-center">
-        {/* Heading */}
-        <h2 className="text-5xl font-bold mb-12 text-black">BENEFITS</h2>
+      <section className="min-h-screen flex flex-col justify-center items-center bg-white text-black px-12 py-20 text-center">
+  {/* Heading */}
+  <h2 className="text-5xl font-bold mt-12 mb-12 text-black">BENEFITS</h2>
 
-        {/* Benefits Wrapper */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl text-left">
-          {/* Manual Entry */}
-          <div className="bg-white p-8 rounded-xl  border-l-4 border-red-500">
-            <h3 className="text-3xl font-semibold mb-4 text-red-500 flex items-center">
-              ❌ Manual Entry
-            </h3>
-            <ul className="space-y-3 text-lg">
-              <li>⏳ Takes too much time</li>
-              <li>🚫 High chance of human errors</li>
-              <li>📌 Requires constant proofreading</li>
-              <li>📉 Difficult to manage large test banks</li>
-              <li>😓 Repetitive and exhausting</li>
-            </ul>
-          </div>
+  {/* Benefits Wrapper */}
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl w-full text-left">
+    {/* Manual Entry */}
+    <div className="bg-white p-8 rounded-xl border-l-4 border-red-500 shadow-md">
+      <h3 className="text-3xl font-semibold mb-4 text-red-500 flex items-center">
+        ❌ Manual Entry
+      </h3>
+      <ul className="space-y-3 text-lg">
+        <li>⏳ Takes too much time</li>
+        <li>🚫 High chance of human errors</li>
+        <li>📌 Requires constant proofreading</li>
+        <li>📉 Difficult to manage large test banks</li>
+        <li>😓 Repetitive and exhausting</li>
+      </ul>
+    </div>
 
-          {/* Automated Entry */}
-          <div className="bg-white p-8 rounded-xl  border-l-4 border-green-500">
-            <h3 className="text-3xl font-semibold mb-4 text-green-500 flex items-center">
-              ✅ Automated Entry
-            </h3>
-            <ul className="space-y-3 text-lg">
-              <li>⚡ Instantly converts documents into questions</li>
-              <li>🎯 Reduces mistakes by automating validation</li>
-              <li>📝 Saves time for more important tasks</li>
-              <li>📊 Handles large-scale test creation effortlessly</li>
-              <li>🚀 Boosts efficiency & accuracy</li>
-            </ul>
-          </div>
-        </div>
+    {/* Automated Entry */}
+    <div className="bg-white p-8 rounded-xl border-l-4 border-green-500 shadow-md">
+      <h3 className="text-3xl font-semibold mb-4 text-green-500 flex items-center">
+        ✅ Automated Entry
+      </h3>
+      <ul className="space-y-3 text-lg">
+        <li>⚡ Instantly converts documents into questions</li>
+        <li>🎯 Reduces mistakes by automating validation</li>
+        <li>📝 Saves time for more important tasks</li>
+        <li>📊 Handles large-scale test creation effortlessly</li>
+        <li>🚀 Boosts efficiency & accuracy</li>
+      </ul>
+    </div>
+  </div>
 
-        {/* Conclusion */}
-        <div className="mt-12 text-xl max-w-4xl bg-white p-6 rounded-lg ">
-          <p className="text-gray-700">
-            Stop wasting time on **manual work**! Switch to{" "}
-            <span className="font-bold text-green-500">Automated Entry</span>
-            and focus on what truly matters – **creating engaging and effective
-            tests**.
-          </p>
-        </div>
-      </section>
+  {/* Conclusion */}
+  <div className="mt-12 text-xl max-w-4xl bg-white p-6 rounded-lg shadow-md">
+    <p className="text-gray-700">
+      Stop wasting time on <strong>manual work</strong>! Switch to{" "}
+      <span className="font-bold text-green-500">Automated Entry</span> and
+      focus on what truly matters – <strong>creating engaging and effective tests</strong>.
+    </p>
+  </div>
+</section>
 
-      {/* Section 5: Contact */}
-      <section className="h-screen flex flex-col justify-center items-center bg-white text-black px-12 py-16 text-center">
-        {/* Heading */}
-        <h2 className="text-5xl font-bold mb-6 mt-6 text-black">
-          ANY QUESTION? CONTACT US
-        </h2>
+{/* Section 5: Contact */}
+<section className="flex flex-col justify-center items-center bg-white text-black px-12 py-20 text-center">
+  {/* Heading */}
+  <h2 className="text-5xl font-bold  mb-12 text-black">ANY QUESTION? CONTACT US</h2>
 
-        {/* Contact Button */}
-        <button className="bg-[#00BFFF] text-white px-6 py-3 mb-12 rounded-full shadow-lg hover:bg-[#009ACD] transition">
-          Contact
-        </button>
+  {/* Contact Button */}
+  <button className="bg-[#00BFFF] text-white mb-12 px-6 py-3 rounded-full shadow-lg hover:bg-[#009ACD] transition">
+    Contact
+  </button>
 
-        {/* Footer */}
-        <footer className="w-full bg-black py-12 px-6 md:px-24 flex flex-col md:flex-row justify-between items-center relative">
+  {/* Footer */}
+  
+</section>
+<footer className="w-full bg-black py-12 px-6 md:px-24 flex flex-col md:flex-row justify-between items-center">
+  {/* Left Section */}
+  <div className="space-y-20">
+  <div className="text-left space-y-3">
+    {/* Logo */}
+    <div className="w-8">
+      <img src={fourth} alt="logo" className="w-full h-auto" />
+    </div>
+    <p className="text-lg text-gray-300 max-w-sm">
+      Get started to grow up your business with a personal AI manager.
+    </p>
+    {/* Copyright with extra top margin */}
+    <p className="text-sm text-gray-500 mt-4">Maxwell, 2023.</p>
+    
+  </div>
+  <p className="text-sm text-gray-400 ">© 2023 Maxwell Inc.</p>
+  </div>
 
-          {/* Left Section */}
-          <div className="text-left space-y-4">
-            {/* Logo */}
-            <div className="w-8">
-              <img src={fourth} alt="logo" className="w-full h-auto" />
-            </div>
-            <p className="text-lg text-gray-300 max-w-sm">
-              Get started to grow up your business with a personal AI manager.
-            </p>
-            <p className="text-sm text-gray-500">Maxwell, 2023.</p>
-            <p className="text-sm text-gray-500 mt-20">© 2023 Maxwell Inc.</p>
+  {/* Right Section */}
+  <div className="text-right flex flex-col items-center md:items-end  md:mt-14 space-y-28">
+    {/* Get Started Button */}
+    <button className="bg-[#00BFFF] text-white px-4 py-3 rounded-full shadow-lg hover:bg-[#009ACD] transition">
+      Get Started
+    </button>
 
-          </div>
+    {/* Legal Links */}
+    <div className="flex space-x-6 text-gray-400 text-sm mt-  mb-6">
+      <a href="#" className="hover:underline">Terms of Service</a>
+      <a href="#" className="hover:underline">Privacy Policy</a>
+      <a href="#" className="hover:underline">Cookies</a>
+    </div>
+  </div>
+</footer>
+<div className="w-full h-1 bg-[#00BFFF] mt-0"></div>
 
-          {/* Right Section */}
-          <div className="text-right flex flex-col items-center md:items-end space-y-4">
-            {/* Get Started Button */}
-            <button className="bg-[#00BFFF] text-white px-6 py-3 rounded-full shadow-lg hover:bg-[#009ACD] transition">
-              Get Started
-            </button>
 
-            {/* Legal Links */}
-            <div className="flex space-x-6 text-gray-400 text-sm mt-12">
-              <a href="#" className="hover:underline">
-                Terms of Service
-              </a>
-              <a href="#" className="hover:underline">
-                Privacy Policy
-              </a>
-              <a href="#" className="hover:underline">
-                Cookies
-              </a>
-            </div>
-          </div>
-        </footer>
-      </section>
+
+
+
+
     </div>
   );
 };
