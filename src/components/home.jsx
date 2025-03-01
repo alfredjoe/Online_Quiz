@@ -138,27 +138,30 @@ const Home = () => {
       {/* Section 5: Contact */}
       <section className="h-screen flex flex-col justify-center items-center bg-white text-black px-12 py-16 text-center">
         {/* Heading */}
-        <h2 className="text-5xl font-bold mb-6 text-gray-800">
+        <h2 className="text-5xl font-bold mb-6 mt-6 text-black">
           ANY QUESTION? CONTACT US
         </h2>
 
         {/* Contact Button */}
-        <button className="bg-[#00BFFF] text-white px-6 py-3 rounded-full shadow-lg hover:bg-[#009ACD] transition">
+        <button className="bg-[#00BFFF] text-white px-6 py-3 mb-12 rounded-full shadow-lg hover:bg-[#009ACD] transition">
           Contact
         </button>
 
         {/* Footer */}
-        <footer className="w-full mt-16 bg-black py-12 px-6 md:px-24 flex flex-col md:flex-row justify-between items-center">
+        <footer className="w-full bg-black py-12 px-6 md:px-24 flex flex-col md:flex-row justify-between items-center relative">
+
           {/* Left Section */}
           <div className="text-left space-y-4">
-            {/* Logo Placeholder */}
-            <div className="text-3xl font-bold text-blue-600">
-              <img src={fourth} alt="logo" className="w-3/4 max-w-md" />
+            {/* Logo */}
+            <div className="w-8">
+              <img src={fourth} alt="logo" className="w-full h-auto" />
             </div>
-            <p className="text-lg text-gray-700 max-w-sm">
+            <p className="text-lg text-gray-300 max-w-sm">
               Get started to grow up your business with a personal AI manager.
             </p>
             <p className="text-sm text-gray-500">Maxwell, 2023.</p>
+            <p className="text-sm text-gray-500 mt-20">© 2023 Maxwell Inc.</p>
+
           </div>
 
           {/* Right Section */}
@@ -169,7 +172,7 @@ const Home = () => {
             </button>
 
             {/* Legal Links */}
-            <div className="flex space-x-6 text-gray-600 text-sm mt-4">
+            <div className="flex space-x-6 text-gray-400 text-sm mt-12">
               <a href="#" className="hover:underline">
                 Terms of Service
               </a>
