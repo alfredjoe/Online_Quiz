@@ -1,8 +1,16 @@
+import { useNavigate } from "react-router-dom";
 import first from "../images/first.gif";
 import second from "../images/second_1.gif";
 import third from "../images/third.gif";
 import fourth from "../images/fourth.png";
+
 const Home = () => {
+  const navigate = useNavigate();
+
+  const handleGetStartedClick = () => {
+    navigate("/signup");
+  };
+
   return (
     <div className="w-full h-screen overflow-auto">
       {/* Section 1: Hero */}
@@ -18,7 +26,10 @@ const Home = () => {
           <div className="text-xl mt-4">
             The easy test maker that engages your colleagues, pupils, or friends
           </div>
-          <button className="bg-[#00BFFF] text-white px-6 py-3 mt-1 rounded-full shadow-lg hover:bg-[#009ACD] transition">
+          <button
+            className="bg-[#00BFFF] text-white px-6 py-3 mt-1 rounded-full shadow-lg hover:bg-[#009ACD] transition"
+            onClick={handleGetStartedClick}
+          >
             Get Started
           </button>
         </div>
@@ -49,7 +60,10 @@ const Home = () => {
             that engages your colleagues, pupils, or friends.
           </p>
 
-          <button className="bg-[#00BFFF] text-white px-6 py-3 rounded-full shadow-lg hover:bg-[#009ACD] transition">
+          <button
+            className="bg-[#00BFFF] text-white px-6 py-3 rounded-full shadow-lg hover:bg-[#009ACD] transition"
+            onClick={handleGetStartedClick}
+          >
             Get Started
           </button>
         </div>
@@ -143,7 +157,10 @@ const Home = () => {
         </h2>
 
         {/* Contact Button */}
-        <button className="bg-[#00BFFF] text-white mb-12 px-6 py-3 rounded-full shadow-lg hover:bg-[#009ACD] transition">
+        <button
+          className="bg-[#00BFFF] text-white mb-12 px-6 py-3 rounded-full shadow-lg hover:bg-[#009ACD] transition"
+          onClick={handleGetStartedClick}
+        >
           Contact
         </button>
 
@@ -169,7 +186,10 @@ const Home = () => {
         {/* Right Section */}
         <div className="text-right flex flex-col items-center md:items-end  md:mt-14 space-y-28">
           {/* Get Started Button */}
-          <button className="bg-[#00BFFF] text-white px-6 py-3 rounded-full shadow-lg hover:bg-[#009ACD] transition">
+          <button
+            className="bg-[#00BFFF] text-white px-6 py-3 rounded-full shadow-lg hover:bg-[#009ACD] transition"
+            onClick={handleGetStartedClick}
+          >
             Get Started
           </button>
 
