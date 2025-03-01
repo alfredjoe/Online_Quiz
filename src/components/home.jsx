@@ -1,14 +1,21 @@
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import first from "../images/first.gif";
 import second from "../images/second_1.gif";
 import third from "../images/third.gif";
 import fourth from "../images/fourth.png";
+import Modal from "./contact";
 
 const Home = () => {
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
 
   const handleGetStartedClick = () => {
     navigate("/signup");
+  };
+
+  const handleContactClick = () => {
+    setShowModal(true);
   };
 
   return (
@@ -79,7 +86,7 @@ const Home = () => {
       </section>
 
       {/* Section 3: Features */}
-      <section className="h-screen flex flex-col justify-center items-center  bg-white text-black px-12 text-center">
+      <section className="h-screen flex flex-col justify-center items-center bg-white text-black px-12 text-center">
         {/* Heading */}
         <h2 className="text-5xl font-bold mb-6">AUTOMATE QUESTION ENTERING</h2>
 
@@ -152,17 +159,20 @@ const Home = () => {
       {/* Section 5: Contact */}
       <section className="flex flex-col justify-center items-center bg-white text-black px-12 py-20 text-center">
         {/* Heading */}
-        <h2 className="text-5xl font-bold  mb-12 text-black">
+        <h2 className="text-5xl font-bold mb-12 text-black">
           ANY QUESTION? CONTACT US
         </h2>
 
         {/* Contact Button */}
         <button
           className="bg-[#00BFFF] text-white mb-12 px-6 py-3 rounded-full shadow-lg hover:bg-[#009ACD] transition"
-          onClick={handleGetStartedClick}
+          onClick={handleContactClick}
         >
           Contact
         </button>
+
+        {/* Modal */}
+        <Modal showModal={showModal} setShowModal={setShowModal} />
 
         {/* Footer */}
       </section>
@@ -184,7 +194,7 @@ const Home = () => {
         </div>
 
         {/* Right Section */}
-        <div className="text-right flex flex-col items-center md:items-end  md:mt-14 space-y-28">
+        <div className="text-right flex flex-col items-center md:items-end md:mt-14 space-y-28">
           {/* Get Started Button */}
           <button
             className="bg-[#00BFFF] text-white px-6 py-3 rounded-full shadow-lg hover:bg-[#009ACD] transition"
@@ -194,16 +204,26 @@ const Home = () => {
           </button>
 
           {/* Legal Links */}
-          <div className="flex space-x-6 text-gray-400 text-sm mt-  mb-6">
-            <a href="#" className="hover:underline">
+          <div className="flex space-x-6 text-gray-400 text-sm mt-6 mb-6">
+            <button
+              className="hover:underline"
+              onClick={() => navigate("/terms")}
+            >
               Terms of Service
-            </a>
-            <a href="#" className="hover:underline">
+            </button>
+
+            <button
+              className="hover:underline"
+              onClick={() => navigate("/privacy")}
+            >
               Privacy Policy
-            </a>
-            <a href="#" className="hover:underline">
+            </button>
+            <button
+              className="hover:underline"
+              onClick={() => navigate("/cookies")}
+            >
               Cookies
-            </a>
+            </button>
           </div>
         </div>
       </footer>
