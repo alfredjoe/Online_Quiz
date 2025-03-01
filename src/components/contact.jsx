@@ -2,21 +2,21 @@ import React, { useRef, useEffect, useState } from "react";
 
 const Modal = ({ showModal, setShowModal }) => {
   const modalRef = useRef();
-  const [errorMessage, setErrorMessage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [popupColor, setPopupColor] = useState("");
 
-  const handleClickOutside = (event) => {
+  const handleClickOutside = useRef((event) => {
     if (modalRef.current && !modalRef.current.contains(event.target)) {
       setShowModal(false);
     }
-  };
+  });
 
   useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
+    const handleOutsideClick = handleClickOutside.current;
+    document.addEventListener("mousedown", handleOutsideClick);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, []);
 
@@ -28,34 +28,35 @@ const Modal = ({ showModal, setShowModal }) => {
     const message = form.message.value.trim();
 
     if (!name) {
-      setErrorMessage("Name is required.");
+      setPopupMessage("Name is required.");
+      setPopupColor("red");
       setShowPopup(true);
-      setPopupMessage("");
+      setTimeout(() => setShowPopup(false), 3000);
       return;
     }
 
     if (!email || !/\S+@\S+\.\S+/.test(email)) {
-      setErrorMessage("Please enter a valid email address.");
+      setPopupMessage("Please enter a valid email address.");
+      setPopupColor("red");
       setShowPopup(true);
-      setPopupMessage("");
+      setTimeout(() => setShowPopup(false), 3000);
       return;
     }
 
     if (!message) {
-      setErrorMessage("Message is required.");
+      setPopupMessage("Message is required.");
+      setPopupColor("red");
       setShowPopup(true);
-      setPopupMessage("");
+      setTimeout(() => setShowPopup(false), 3000);
       return;
     }
 
     // Simulate successful form submission
+    setShowModal(false);
     setPopupMessage("Message sent successfully!");
     setPopupColor("green");
     setShowPopup(true);
-    setTimeout(() => {
-      setShowPopup(false);
-      setShowModal(false);
-    }, 3000);
+    setTimeout(() => setShowPopup(false), 3000);
   };
 
   return (
@@ -118,10 +119,6 @@ const Modal = ({ showModal, setShowModal }) => {
               </div>
             </form>
 
-            {errorMessage && (
-              <div className="mt-4 text-red-500">{errorMessage}</div>
-            )}
-
             {/* Close Button */}
             <button
               className="absolute top-4 right-4 text-gray-700 hover:text-gray-900 transition"
@@ -129,16 +126,18 @@ const Modal = ({ showModal, setShowModal }) => {
             >
               &times;
             </button>
+
+            {showPopup && popupColor === "red" && (
+              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 px-4 py-2 mb-4 rounded-lg shadow-lg text-white bg-red-500">
+                {popupMessage}
+              </div>
+            )}
           </div>
         </div>
       ) : null}
 
-      {showPopup && (
-        <div
-          className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg text-white ${
-            popupColor === "green" ? "bg-green-500" : "bg-red-500"
-          }`}
-        >
+      {showPopup && popupColor === "green" && (
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg text-white bg-green-500">
           {popupMessage}
         </div>
       )}
