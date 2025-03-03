@@ -1,5 +1,5 @@
 import React from "react";
-import CreateTest from "./CreateTest";
+import CreateTest from "./Create_test";
 import ViewResults from "./ViewResults";
 
 const Dashboard = () => {
