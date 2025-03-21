@@ -34,23 +34,36 @@ const Signup = () => {
     setIsValidRole(newRole !== "none");
   };
 
-  const handleSignup = () => {
-    const validEmail = validateEmail(email);
-    const validPassword = password.length >= 8;
-    const validRole = role !== "none";
+  const handleSignup = async () => {
+    if (!validateEmail(email) || password.length < 8 || role === "none") {
+      setMessage("Invalid input data");
+      setMessageType("error");
+      setShowMessage(true);
+      setTimeout(() => setShowMessage(false), 3000);
+      return;
+    }
 
-    setIsValidEmail(validEmail);
-    setIsValidPassword(validPassword);
-    setIsValidRole(validRole);
+    try {
+      const response = await fetch("http://localhost:5000/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, role }),
+      });
 
-    if (validEmail && validPassword && validRole) {
-      setMessage("Signup Successful");
-      setMessageType("success");
-      navigate("/dashboard"); // Navigate to the dashboard upon successful signup
-    } else {
-      setMessage("Wrong Credentials");
+      const data = await response.json();
+      if (response.ok) {
+        setMessage("Signup Successful");
+        setMessageType("success");
+        navigate("/dashboard");
+      } else {
+        setMessage(data.message || "Signup Failed");
+        setMessageType("error");
+      }
+    } catch (error) {
+      setMessage("Network Error");
       setMessageType("error");
     }
+
     setShowMessage(true);
     setTimeout(() => setShowMessage(false), 3000);
   };

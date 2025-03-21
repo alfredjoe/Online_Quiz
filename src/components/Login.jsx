@@ -1,69 +1,65 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
+import { Link, useNavigate } from "react-router-dom";
 import bgImage from "../images/bg.jpg";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("none");
-  const [isValidEmail, setIsValidEmail] = useState(true);
-  const [isValidPassword, setIsValidPassword] = useState(true);
-  const [isValidRole, setIsValidRole] = useState(true);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
   const [showMessage, setShowMessage] = useState(false);
-  const navigate = useNavigate(); // useNavigate hook
+  const navigate = useNavigate();
 
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const handleEmailChange = (e) => {
-    const newEmail = e.target.value;
-    setEmail(newEmail);
-    setIsValidEmail(validateEmail(newEmail));
-  };
-
-  const handlePasswordChange = (e) => {
-    const newPassword = e.target.value;
-    setPassword(newPassword);
-    setIsValidPassword(newPassword.length >= 8);
-  };
-
-  const handleRoleChange = (e) => {
-    const newRole = e.target.value;
-    setRole(newRole);
-    setIsValidRole(newRole !== "none");
-  };
-
-  const handleLogin = () => {
-    const validEmail = validateEmail(email);
-    const validPassword = password.length >= 8;
-    const validRole = role !== "none";
-
-    setIsValidEmail(validEmail);
-    setIsValidPassword(validPassword);
-    setIsValidRole(validRole);
-
-    if (validEmail && validPassword && validRole) {
-      setMessage("Login Successful");
-      setMessageType("success");
-      navigate("/dashboard"); // Navigate to the dashboard upon successful login
-    } else {
-      setMessage("Error: Wrong Credentials");
+  const handleLogin = async () => {
+    if (!email || password.length < 8 || role === "none") {
+      setMessage("Invalid credentials");
+      setMessageType("error");
+      setShowMessage(true);
+      return;
+    }
+  
+    try {
+      const response = await fetch("http://localhost:5000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, role }),
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        console.error("Login failed:", data.error);
+        setMessage(data.error || "Invalid email or password.");
+        setMessageType("error");
+      } else {
+        console.log("Login successful:", data);
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("role", data.role);
+        setMessage("Login Successful 🎉");
+        setMessageType("success");
+        setTimeout(() => navigate("/dashboard"), 1500);
+      }
+    } catch (error) {
+      console.error("Server error:", error);
+      setMessage("Server error. Try again later.");
       setMessageType("error");
     }
+  
     setShowMessage(true);
     setTimeout(() => setShowMessage(false), 3000);
   };
+  
 
   return (
     <div className="flex flex-col md:flex-row h-screen">
-      {/* Left side - Background Image */}
       <div
         className="hidden md:block md:w-1/2 bg-cover bg-center"
         style={{ backgroundImage: `url(${bgImage})` }}
       ></div>
 
-      {/* Right side - Login Form */}
       <div className="w-full md:w-1/2 flex flex-col justify-center items-center bg-gray-100 p-6 md:p-12">
         <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
           <h2 className="text-2xl font-semibold mb-4 text-center">Login</h2>
@@ -72,53 +68,32 @@ const Login = () => {
             <input
               type="text"
               value={email}
-              onChange={handleEmailChange}
-              className={`w-full p-2 border rounded focus:outline-none ${
-                isValidEmail ? "border-gray-300" : "border-red-500"
-              }`}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full p-2 border rounded"
               placeholder="Enter your email"
             />
-            {!isValidEmail && (
-              <p className="text-red-500 text-sm mt-1">
-                Enter a valid email address
-              </p>
-            )}
           </div>
           <div className="mb-4">
             <label className="block text-gray-600 text-sm mb-1">Password</label>
             <input
               type="password"
               value={password}
-              onChange={handlePasswordChange}
-              className={`w-full p-2 border rounded focus:outline-none ${
-                isValidPassword ? "border-gray-300" : "border-red-500"
-              }`}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-2 border rounded"
               placeholder="Enter your password"
             />
-            {!isValidPassword && (
-              <p className="text-red-500 text-sm mt-1">
-                Password must be at least 8 characters
-              </p>
-            )}
           </div>
           <div className="mb-4">
             <label className="block text-gray-600 text-sm mb-1">Role</label>
             <select
               value={role}
-              onChange={handleRoleChange}
-              className={`w-full p-2 border rounded focus:outline-none ${
-                isValidRole ? "border-gray-300" : "border-red-500"
-              }`}
+              onChange={(e) => setRole(e.target.value)}
+              className="w-full p-2 border rounded"
             >
               <option value="none">Select Role</option>
               <option value="student">Student</option>
               <option value="teacher">Teacher</option>
             </select>
-            {!isValidRole && (
-              <p className="text-red-500 text-sm mt-1">
-                Please select a valid role
-              </p>
-            )}
           </div>
           <button
             onClick={handleLogin}
@@ -135,7 +110,6 @@ const Login = () => {
         </div>
       </div>
 
-      {/* Pop-up Message */}
       {showMessage && (
         <div
           className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 text-white rounded shadow-lg ${
