@@ -1,64 +1,82 @@
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
+import express from "express";
+import cors from "cors";
+import admin from "firebase-admin";
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
 
 const app = express();
-const PORT = 5000;
-
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
-app.use(bodyParser.json());
+app.use(express.json());
 
-// Simulated database (Replace with Firestore)
-const users = [
-  { email: "student@example.com", password: "student123", role: "student" },
-  { email: "teacher@example.com", password: "teacher123", role: "teacher" },
-];
+// Initialize Firebase Admin SDK
+import serviceAccount from "./serviceAccountKey.json" assert { type: "json" };
 
-// Signup route
-app.post("/signup", (req, res) => {
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
+const db = admin.firestore();
+const auth = admin.auth();
+
+// ✅ Signup - Check Firestore before creating user
+app.post("/signup", async (req, res) => {
+  const { email, password, role } = req.body;
+
+  if (!email || !password || role === "none") {
+    return res.status(400).json({ error: "Invalid input data" });
+  }
+
   try {
-    const { email, password, role } = req.body;
+    // 🔍 Check if email exists
+    const userQuery = await db.collection("users").where("email", "==", email).get();
 
-    if (!email || !password || !role) {
-      return res.status(400).json({ error: "All fields are required" });
+    if (!userQuery.empty) {
+      return res.status(400).json({ error: "User already exists" });
     }
 
-    if (users.some((u) => u.email === email)) {
-      return res.status(400).json({ error: "Email already registered" });
-    }
+    // ✅ Create user in Firebase Authentication
+    const user = await auth.createUser({ email, password });
 
-    users.push({ email, password, role });
-    res.status(201).json({ message: "Signup successful" });
+    // ✅ Store user in Firestore
+    await db.collection("users").doc(user.uid).set({
+      email,
+      role,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    res.status(201).json({ message: "User created", uid: user.uid });
   } catch (error) {
-    console.error("Signup error:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error("Signup Error:", error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-// Login route
-app.post("/login", (req, res) => {
+// ✅ Login - Fetch from Firestore
+app.post("/login", async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: "Missing email" });
+  }
+
   try {
-    const { email, password, role } = req.body;
+    // Check Firestore for the user
+    const userDoc = await db.collection("users").where("email", "==", email).get();
 
-    if (!email || !password || !role) {
-      return res.status(400).json({ error: "All fields are required" });
+    if (userDoc.empty) {
+      return res.status(401).json({ error: "User not found" });
     }
 
-    const user = users.find(
-      (u) => u.email === email && u.password === password && u.role === role
-    );
-
-    if (!user) {
-      return res.status(401).json({ error: "Invalid email or password" });
-    }
-
-    res.json({ token: "fake-jwt-token", role: user.role });
+    const userData = userDoc.docs[0].data();
+    res.status(200).json({ message: "Login successful", role: userData.role });
   } catch (error) {
-    console.error("Login error:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error("Login Error:", error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
