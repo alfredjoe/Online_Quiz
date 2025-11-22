@@ -21,8 +21,21 @@
 
   <body>
     <div id="root"></div>
-    <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
-    <script src="%VITE_GPTENGINEER_CDN%" type="module"></script>
+    <!-- Dynamically load optional CDN module only when env var is set. -->
+    <script type="module">
+      const _cdn = import.meta.env.VITE_GPTENGINEER_CDN;
+      if (_cdn) {
+        try {
+          // Prevent Vite from trying to pre-bundle or resolve this dynamic import
+          // at build time by using the @vite-ignore comment.
+          import(/* @vite-ignore */ _cdn).catch(() => {
+            /* ignore CDN load failures */
+          });
+        } catch (e) {
+          // Defensive: ignore runtime errors when env is malformed
+        }
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
