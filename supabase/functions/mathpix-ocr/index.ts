@@ -15,6 +15,7 @@ serve(async (req) => {
   try {
     const MATHPIX_APP_ID = Deno.env.get("MATHPIX_APP_ID");
     const MATHPIX_APP_KEY = Deno.env.get("MATHPIX_APP_KEY");
+    const MATHPIX_API_BASE = Deno.env.get("MATHPIX_API_BASE") || "https://api.mathpix.com";
 
     if (!MATHPIX_APP_ID || !MATHPIX_APP_KEY) {
       throw new Error("MathPix API credentials are not set");
@@ -45,7 +46,7 @@ serve(async (req) => {
     // Special case: if we're just checking a PDF status with an existing ID
     if (check_status && pdf_id) {
       console.log("Checking status for existing PDF ID:", pdf_id);
-      const pollEndpoint = `https://api.mathpix.com/v3/pdf/${pdf_id}`;
+      const pollEndpoint = `${MATHPIX_API_BASE}/v3/pdf/${pdf_id}`;
       
       const pollResponse = await fetch(pollEndpoint, {
         method: "GET",
@@ -100,7 +101,7 @@ serve(async (req) => {
           include_asciimath: true,
         },
       };
-      apiEndpoint = "https://api.mathpix.com/v3/text";
+      apiEndpoint = `${MATHPIX_API_BASE}/v3/text`;
       console.log("Processing image with MathPix text API");
     } else if (file_url && file_type === "pdf") {
       console.log("Processing PDF file:", file_url);
@@ -117,7 +118,7 @@ serve(async (req) => {
         math_inline_delimiters: ["$", "$"],
         math_display_delimiters: ["$$", "$$"]
       };
-      apiEndpoint = "https://api.mathpix.com/v3/pdf";
+      apiEndpoint = `${MATHPIX_API_BASE}/v3/pdf`;
       
       console.log("Calling MathPix PDF API with:", JSON.stringify(requestBody, null, 2));
     } else if (file_url) {
@@ -130,7 +131,7 @@ serve(async (req) => {
           include_asciimath: true,
         },
       };
-      apiEndpoint = "https://api.mathpix.com/v3/text";
+      apiEndpoint = `${MATHPIX_API_BASE}/v3/text`;
       console.log("Processing image URL with MathPix text API");
     } else {
       throw new Error("No image or file URL provided");
@@ -169,7 +170,7 @@ serve(async (req) => {
         await new Promise(resolve => setTimeout(resolve, 5000));
         
         // Poll for the results
-        const pollEndpoint = `https://api.mathpix.com/v3/pdf/${data.pdf_id}`;
+        const pollEndpoint = `${MATHPIX_API_BASE}/v3/pdf/${data.pdf_id}`;
         console.log("Polling for PDF results at:", pollEndpoint);
         
         // Implement a retry mechanism for polling

@@ -14,16 +14,17 @@ export async function extractTextFromPDF(file: File): Promise<{ text: string; qu
 
   console.log('Sending PDF to server...');
   try {
-    // Use env var to choose backend; fallback to deployed Railway URL
+    // Use configured backend via env var. Fall back to localhost for development.
     const rawBase = (import.meta as any).env?.VITE_PDF_EXTRACTOR_URL as string | undefined;
-    const FALLBACK_BASE = 'https://onlinequizbackend-production.up.railway.app';
-    let base = (rawBase || FALLBACK_BASE).trim();
+    const DEFAULT_LOCAL = 'http://localhost:5000';
+    let base = (rawBase || DEFAULT_LOCAL).trim();
+
     if (!/^https?:\/\//i.test(base)) {
       if (/^(localhost|127\.)/.test(base)) base = 'http://' + base;
       else base = 'https://' + base;
     }
-    const endpoint = base.replace(/\/+$/, '') + '/api/extract-text';
 
+    const endpoint = base.replace(/\/+$/, '') + '/api/extract-text';
     console.log('Using endpoint:', endpoint);
 
     const response = await fetch(endpoint, {

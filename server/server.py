@@ -58,7 +58,8 @@ def extract_text_from_image(image_path):
         }
     }
 
-    resp = requests.post('https://api.mathpix.com/v3/text', headers=headers, json=data, timeout=60)
+    MATHPIX_API_BASE = os.environ.get('MATHPIX_API_BASE', 'https://api.mathpix.com')
+    resp = requests.post(f"{MATHPIX_API_BASE}/v3/text", headers=headers, json=data, timeout=60)
     if resp.status_code == 200:
         return resp.json().get('text', '')
     return None

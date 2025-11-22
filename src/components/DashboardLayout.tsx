@@ -182,7 +182,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex h-8 w-full items-center justify-between rounded-md px-2 text-sm font-medium hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 data-[state=open]:bg-gray-100">
                   <Avatar className="mr-2 h-5 w-5">
-                    <AvatarImage src={`https://avatar.vercel.sh/${user?.email}.png`} alt={user?.name} />
+                    <AvatarImage src={`${(import.meta as any).env?.VITE_AVATAR_SERVICE || 'https://avatar.vercel.sh'}/${user?.email}.png`} alt={user?.name} />
                     <AvatarFallback>{user?.name?.charAt(0).toUpperCase()}</AvatarFallback>
                   </Avatar>
                   <span>{user?.name}</span>
@@ -233,7 +233,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex h-8 w-full items-center justify-between rounded-md px-2 text-sm font-medium hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 data-[state=open]:bg-gray-100">
                   <Avatar className="mr-2 h-5 w-5">
-                    <AvatarImage src={`https://avatar.vercel.sh/${user?.email}.png`} alt={user?.name} />
+                    <AvatarImage src={`${(import.meta as any).env?.VITE_AVATAR_SERVICE || 'https://avatar.vercel.sh'}/${user?.email}.png`} alt={user?.name} />
                     <AvatarFallback>{user?.name?.charAt(0).toUpperCase()}</AvatarFallback>
                   </Avatar>
                   <span>{user?.name}</span>
