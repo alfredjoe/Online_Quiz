@@ -8,36 +8,58 @@ const SUPABASE_URL = (import.meta as any).env?.VITE_SUPABASE_URL as string | und
 const SUPABASE_PUBLISHABLE_KEY = (import.meta as any).env?.VITE_SUPABASE_KEY as string | undefined;
 
 if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-  // Fail fast so developers must provide env vars instead of relying on hard-coded secrets.
-  throw new Error(
-    'Missing Supabase configuration. Set VITE_SUPABASE_URL and VITE_SUPABASE_KEY in your environment.'
+  // Do not throw at import time in production builds — this will crash the whole app
+  // and produce a blank page. Instead, warn and export a safe stub that throws
+  // helpful errors when used. Still recommend setting the VITE_ vars in your
+  // deployment and rebuilding so the real client is created.
+  console.warn(
+    'Supabase not configured: VITE_SUPABASE_URL and/or VITE_SUPABASE_KEY are missing. Some features will not work.'
   );
 }
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient<Database>(
-  SUPABASE_URL, 
-  SUPABASE_PUBLISHABLE_KEY,
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true
+function createStub() {
+  const handler: ProxyHandler<any> = {
+    get(_, prop) {
+      throw new Error(
+        `Supabase is not configured (missing VITE_SUPABASE_URL / VITE_SUPABASE_KEY). Tried to access: ${String(prop)}.\nSet the env variables and rebuild your app.`
+      );
     },
-    global: {
-      headers: {
-        'x-client-info': 'lovable-quizapp'
-      }
-    },
-    db: {
-      schema: 'public'
-    },
-    realtime: {
-      params: {
-        eventsPerSecond: 10
-      }
+    apply() {
+      throw new Error(
+        'Supabase is not configured (missing VITE_SUPABASE_URL / VITE_SUPABASE_KEY). Set the env variables and rebuild your app.'
+      );
     }
-  }
-);
+  };
+  return new Proxy(function () {}, handler);
+}
+
+export const supabase =
+  SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY
+    ? createClient<Database>(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY,
+        {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true,
+          },
+          global: {
+            headers: {
+              'x-client-info': 'lovable-quizapp',
+            },
+          },
+          db: {
+            schema: 'public',
+          },
+          realtime: {
+            params: {
+              eventsPerSecond: 10,
+            },
+          },
+        }
+      )
+    : (createStub() as unknown as ReturnType<typeof createClient>);
