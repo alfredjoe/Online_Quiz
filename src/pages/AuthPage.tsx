@@ -41,7 +41,7 @@ const AuthPage = () => {
   if (user) {
     // Redirect based on role
     if (user.role === "admin") {
-      return <Navigate to="/admin/dashboard" />;
+      return <Navigate to="/admin/AdminDashboard" />;
     } else if (user.role === "teacher") {
       return <Navigate to="/teacher/dashboard" />;
     } else {

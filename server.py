@@ -11,7 +11,7 @@ import fitz
 app = Flask(__name__)
 # Configure CORS to allow all origins and methods
 CORS(app, resources={r"/*": {
-    "origins": ["http://localhost:8080", "http://localhost:8081", "http://192.168.1.35:8080"],
+    "origins": ["https://online-quiz-gilt-eta.vercel.app/"],
     "methods": ["GET", "POST", "OPTIONS"],
     "allow_headers": ["Content-Type", "Authorization"]
 }})
