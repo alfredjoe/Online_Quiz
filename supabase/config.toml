@@ -1,0 +1,5 @@
+
+project_id = "thcjgzorelurfuocnmrf"
+
+[functions.mathpix-ocr]
+verify_jwt = true
