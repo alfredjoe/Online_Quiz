@@ -14,19 +14,10 @@ export async function extractTextFromPDF(file: File): Promise<{ text: string; qu
 
   console.log('Sending PDF to server...');
   try {
-    const rawBase = (import.meta as any).env?.VITE_PDF_EXTRACTOR_URL as string | undefined;
-    const DEFAULT_BASE = 'http://localhost:5000';
-    let base = (rawBase || DEFAULT_BASE).trim();
-
-    if (!/^https?:\/\//i.test(base)) {
-      if (/^(localhost|127\.)/.test(base)) {
-        base = 'http://' + base;
-      } else {
-        base = 'https://' + base;
-      }
-    }
-
-    const endpoint = base.replace(/\/+$/, '') + '/api/extract-text';
+    // Railway backend URL - hardcoded
+    const endpoint = 'https://onlinequizbackend-production.up.railway.app/api/extract-text';
+    
+    console.log('Using endpoint:', endpoint); // Debug log
 
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -42,7 +33,7 @@ export async function extractTextFromPDF(file: File): Promise<{ text: string; qu
       try {
         errorData = await response.json();
       } catch (e) {
-        // ignore JSON parse errors
+        console.error('Failed to parse error response:', e);
       }
       console.error('Server error:', errorData || `${response.status} ${response.statusText}`);
       throw new Error(errorData?.error || `Failed to extract text: ${response.status} ${response.statusText}`);
