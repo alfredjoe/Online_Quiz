@@ -14,7 +14,7 @@ export async function extractTextFromPDF(file: File): Promise<{ text: string; qu
 
     console.log('Sending PDF to server...');
     try {
-        const response = await fetch('http://localhost:5000/api/extract-text', {
+        const response = await fetch('onlinequizbackend-production.up.railway.app', {
             method: 'POST',
             body: formData,
             headers: {
