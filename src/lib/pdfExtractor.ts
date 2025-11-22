@@ -1,213 +1,66 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-import os
-import base64
-import requests
-import tempfile
-import re
-import fitz
+export interface Question {
+  text: string;
+  options: string[];
+}
 
-app = Flask(__name__)
+export interface ExtractResponse {
+  text: string;
+  questions: Question[];
+}
 
-# Allow all origins for testing (since Vercel not deployed yet)
-CORS(app)
+export async function extractTextFromPDF(file: File): Promise<{ text: string; questions: any[] }> {
+  const formData = new FormData();
+  formData.append('file', file);
 
-@app.route("/", methods=["GET"])
-def home():
-    return "OK", 200
+  console.log('Sending PDF to server...');
+  try {
+    const rawBase = (import.meta as any).env?.VITE_PDF_EXTRACTOR_URL as string | undefined;
+    const DEFAULT_BASE = 'http://localhost:5000';
+    let base = (rawBase || DEFAULT_BASE).trim();
 
-# Configuration
-APP_ID = "miniproject_9946de_04959c"
-APP_KEY = "e4a3944a3821bca6f5617082bbc026ee1199f991bf789773b312348cb56fd302"
+    if (!/^https?:\/\//i.test(base)) {
+      if (/^(localhost|127\.)/.test(base)) {
+        base = 'http://' + base;
+      } else {
+        base = 'https://' + base;
+      }
+    }
 
-def convert_pdf_to_images(pdf_path, output_dir):
-    """Convert PDF pages to images."""
-    try:
-        print(f"Starting PDF conversion for: {pdf_path}")
-        images = []
-        pdf_document = fitz.open(pdf_path)
-        print(f"PDF opened successfully. Number of pages: {len(pdf_document)}")
-        for page_num in range(len(pdf_document)):
-            print(f"Converting page {page_num + 1}")
-            page = pdf_document[page_num]
-            pix = page.get_pixmap(matrix=fitz.Matrix(300/72, 300/72))
-            image_path = os.path.join(output_dir, f'page_{page_num + 1}.png')
-            pix.save(image_path)
-            images.append(image_path)
-            print(f"Page {page_num + 1} saved as: {image_path}")
-        pdf_document.close()
-        print(f"PDF conversion completed. Created {len(images)} images")
-        return images
-    except Exception as e:
-        print(f"Error in convert_pdf_to_images: {str(e)}")
-        import traceback
-        traceback.print_exc()
-        return []
+    const endpoint = base.replace(/\/+$/, '') + '/api/extract-text';
 
-def image_to_base64(image_path):
-    """Convert image to base64 string."""
-    with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode()
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Accept': 'application/json'
+      },
+      mode: 'cors'
+    });
 
-def extract_text_from_image(image_path):
-    """Extract text from image using Mathpix API."""
-    try:
-        print(f"Processing image: {image_path}")
-        base64_image = image_to_base64(image_path)
-        print("Image converted to base64")
+    if (!response.ok) {
+      let errorData: any = null;
+      try {
+        errorData = await response.json();
+      } catch (e) {
+        // ignore JSON parse errors
+      }
+      console.error('Server error:', errorData || `${response.status} ${response.statusText}`);
+      throw new Error(errorData?.error || `Failed to extract text: ${response.status} ${response.statusText}`);
+    }
 
-        headers = {
-            "app_id": APP_ID,
-            "app_key": APP_KEY,
-            "Content-type": "application/json"
-        }
+    const data = await response.json();
+    console.log('Server response:', data);
 
-        data = {
-            "src": f"data:image/png;base64,{base64_image}",
-            "formats": ["text"],
-            "data_options": {
-                "include_latex": True,
-                "include_asciimath": True
-            }
-        }
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to extract text from PDF');
+    }
 
-        print("Sending request to MathPix API...")
-        response = requests.post("https://api.mathpix.com/v3/text", headers=headers, json=data)
-        print(f"MathPix API response status: {response.status_code}")
-
-        if response.status_code == 200:
-            response_data = response.json()
-            print("MathPix API response:", response_data)
-            text = response_data.get("text", "")
-            if not text:
-                print("Warning: No text extracted from MathPix response")
-                return None
-            print(f"Extracted text length: {len(text)}")
-            print("Extracted text:", text)
-            return text
-        else:
-            print(f"Error from MathPix API: {response.status_code}")
-            print("Error response:", response.text)
-            return None
-    except Exception as e:
-        print(f"Error in extract_text_from_image: {str(e)}")
-        import traceback
-        traceback.print_exc()
-        return None
-
-def parse_questions_and_options(text):
-    """Parse text into questions and options, preserving LaTeX formatting."""
-    questions = []
-    question_blocks = re.split(r'(?=\d+\.)', text)
-    for block in question_blocks:
-        if not block.strip():
-            continue
-        question_match = re.match(r'(\d+)\.(.*?)(?=\([A-E]\)|$)', block, re.DOTALL)
-        if not question_match:
-            continue
-        question_number = question_match.group(1)
-        question_text = question_match.group(2).strip()
-        options = []
-        option_matches = re.finditer(r'\(([A-E])\)(.*?)(?=\([A-E]\)|$)', block, re.DOTALL)
-        for match in option_matches:
-            option_text = match[2].strip()
-            if option_text:
-                formatted_option = format_math_question(option_text)
-                options.append(formatted_option)
-        if question_text and options:
-            formatted_question = format_math_question(question_text)
-            questions.append({
-                'text': formatted_question,
-                'options': options
-            })
-    return questions
-
-def format_math_question(text: str) -> str:
-    if not text:
-        return text
-    text = re.sub(r'\\\(\\\(', r'\(', text)
-    text = re.sub(r'\\\)\\\)', r'\)', text)
-    text = re.sub(r'\\\[\\\[', r'\[', text)
-    text = re.sub(r'\\\]\\\]', r'\]', text)
-    if text.startswith('\\(') and text.endswith('\\)'):
-        return text
-    if text.startswith('\\[') and text.endswith('\\]'):
-        return text
-    if text.startswith('$') and text.endswith('$'):
-        return text
-    text = re.sub(r'\s+', ' ', text).strip()
-    return f'\\({text}\\)'
-
-@app.route('/api/extract-text', methods=['POST'])
-def extract_text():
-    if 'file' not in request.files:
-        print("No file provided in request")
-        return jsonify({'error': 'No file provided'}), 400
-    
-    file = request.files['file']
-    if file.filename == '':
-        print("Empty filename in request")
-        return jsonify({'error': 'No file selected'}), 400
-    
-    if not file.filename.endswith('.pdf'):
-        print(f"Invalid file type: {file.filename}")
-        return jsonify({'error': 'File must be a PDF'}), 400
-    
-    try:
-        print(f"Processing PDF file: {file.filename}")
-        with tempfile.TemporaryDirectory() as temp_dir:
-            pdf_path = os.path.join(temp_dir, 'upload.pdf')
-            file.save(pdf_path)
-            print(f"PDF saved to: {pdf_path}")
-            
-            print("Converting PDF to images...")
-            image_paths = convert_pdf_to_images(pdf_path, temp_dir)
-            print(f"Converted {len(image_paths)} pages to images")
-            
-            all_text = []
-            for i, image_path in enumerate(image_paths):
-                print(f"Processing page {i+1}...")
-                text = extract_text_from_image(image_path)
-                if text:
-                    cleaned_text = text.strip()
-                    if cleaned_text:
-                        print(f"Page {i+1} text length: {len(cleaned_text)}")
-                        all_text.append(cleaned_text)
-                    else:
-                        print(f"Page {i+1} returned empty text")
-                else:
-                    print(f"Failed to extract text from page {i+1}")
-            
-            if not all_text:
-                print("No text could be extracted from any page")
-                return jsonify({'error': 'No text could be extracted from the PDF'}), 400
-            
-            final_text = '\n'.join(all_text)
-            print(f"Final extracted text length: {len(final_text)}")
-            print("Final text preview:", final_text[:500] + "..." if len(final_text) > 500 else final_text)
-            
-            questions = parse_questions_and_options(final_text)
-            print(f"Parsed {len(questions)} questions")
-            
-            formatted_questions = []
-            for q in questions:
-                formatted_question = f"<p>{q['text']}</p>"
-                for option in q['options']:
-                    formatted_question += f"<p>{option}</p>"
-                formatted_questions.append(formatted_question)
-            
-            return jsonify({
-                'success': True,
-                'text': final_text,
-                'questions': formatted_questions
-            })
-    
-    except Exception as e:
-        print(f"Error processing PDF: {str(e)}")
-        import traceback
-        traceback.print_exc()
-        return jsonify({'error': f'Failed to process PDF: {str(e)}'}), 500
-
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run(debug=True, host="0.0.0.0", port=port)
+    return {
+      text: data.text || '',
+      questions: data.questions || []
+    };
+  } catch (error) {
+    console.error('Error in extractTextFromPDF:', error);
+    throw error;
+  }
+}
