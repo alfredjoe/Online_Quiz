@@ -8,16 +8,15 @@ import re
 import fitz
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {
-    "origins": ["https://online-quiz-gilt-eta.vercel.app"],
-    "methods": ["GET", "POST", "OPTIONS"],
-    "allow_headers": ["Content-Type", "Authorization"]
-}})
+
+# Allow all origins for testing (since Vercel not deployed yet)
+CORS(app)
 
 @app.route("/", methods=["GET"])
 def home():
     return "OK", 200
 
+# Configuration
 APP_ID = "miniproject_9946de_04959c"
 APP_KEY = "e4a3944a3821bca6f5617082bbc026ee1199f991bf789773b312348cb56fd302"
 
@@ -144,22 +143,27 @@ def extract_text():
     if 'file' not in request.files:
         print("No file provided in request")
         return jsonify({'error': 'No file provided'}), 400
+    
     file = request.files['file']
     if file.filename == '':
         print("Empty filename in request")
         return jsonify({'error': 'No file selected'}), 400
+    
     if not file.filename.endswith('.pdf'):
         print(f"Invalid file type: {file.filename}")
         return jsonify({'error': 'File must be a PDF'}), 400
+    
     try:
         print(f"Processing PDF file: {file.filename}")
         with tempfile.TemporaryDirectory() as temp_dir:
             pdf_path = os.path.join(temp_dir, 'upload.pdf')
             file.save(pdf_path)
             print(f"PDF saved to: {pdf_path}")
+            
             print("Converting PDF to images...")
             image_paths = convert_pdf_to_images(pdf_path, temp_dir)
             print(f"Converted {len(image_paths)} pages to images")
+            
             all_text = []
             for i, image_path in enumerate(image_paths):
                 print(f"Processing page {i+1}...")
@@ -173,25 +177,31 @@ def extract_text():
                         print(f"Page {i+1} returned empty text")
                 else:
                     print(f"Failed to extract text from page {i+1}")
+            
             if not all_text:
                 print("No text could be extracted from any page")
                 return jsonify({'error': 'No text could be extracted from the PDF'}), 400
+            
             final_text = '\n'.join(all_text)
             print(f"Final extracted text length: {len(final_text)}")
             print("Final text preview:", final_text[:500] + "..." if len(final_text) > 500 else final_text)
+            
             questions = parse_questions_and_options(final_text)
             print(f"Parsed {len(questions)} questions")
+            
             formatted_questions = []
             for q in questions:
                 formatted_question = f"<p>{q['text']}</p>"
                 for option in q['options']:
                     formatted_question += f"<p>{option}</p>"
                 formatted_questions.append(formatted_question)
+            
             return jsonify({
                 'success': True,
                 'text': final_text,
                 'questions': formatted_questions
             })
+    
     except Exception as e:
         print(f"Error processing PDF: {str(e)}")
         import traceback
