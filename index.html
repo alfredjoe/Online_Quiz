@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -13,40 +14,25 @@
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="" />
+    <!-- Favicon (light mode) -->
+    <link rel="icon" href="/public/favicon-light.png" type="image/png" media="(prefers-color-scheme: light)">
+    <!-- Favicon (dark mode) -->
+    <link rel="icon" href="/public/favicon-dark.png" type="image/png" media="(prefers-color-scheme: dark)">
+    <!-- Fallback favicon -->
+    <link rel="icon" href="/public/favicon-light.png" type="image/png">
 
-    <!-- Only one favicon link without media attribute -->
-    <link rel="icon" href="/public/favicon-light.png" type="image/png" />
-
-    <script>
-      function setFavicon() {
-        const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        const faviconHref = isDark ? "/public/favicon-dark.png" : "/public/favicon-light.png";
-        let favicon = document.querySelector("link[rel~='icon']");
-
-        if (!favicon) {
-          favicon = document.createElement("link");
-          favicon.rel = "icon";
-          document.head.appendChild(favicon);
-        }
-        favicon.href = faviconHref;
-      }
-
-      // Set favicon initially
-      setFavicon();
-
-      // Listen for changes in color scheme preference
-      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", setFavicon);
-    </script>
+    <!-- <link rel="icon" type="image/svg+xml" href="/favicon.ico" /> -->
   </head>
 
   <body>
     <div id="root"></div>
-
     <!-- Dynamically load optional CDN module only when env var is set. -->
     <script type="module">
       const _cdn = import.meta.env.VITE_GPTENGINEER_CDN;
       if (_cdn) {
         try {
+          // Prevent Vite from trying to pre-bundle or resolve this dynamic import
+          // at build time by using the @vite-ignore comment.
           import(/* @vite-ignore */ _cdn).catch(() => {
             /* ignore CDN load failures */
           });
